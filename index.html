@@ -1,11 +1,634 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>TUEM HUB Scholarship Portal</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TUEM HUB Scholarship Portal</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#f4f8fb;
+color:#333;
+overflow-x:hidden;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+padding:20px;
+}
+
+.card{
+background:#fff;
+padding:30px;
+border-radius:20px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+animation:fadeIn 0.6s ease;
+margin-top:30px;
+}
+
+.logo{
+width:250px;
+display:block;
+margin:0 auto 20px;
+}
+
+h1{
+text-align:center;
+margin-bottom:10px;
+color:#11b7c8;
+}
+
+.subtitle{
+text-align:center;
+margin-bottom:25px;
+color:#777;
+}
+
+input, select{
+width:100%;
+padding:14px;
+margin-bottom:15px;
+border:1px solid #ddd;
+border-radius:12px;
+font-size:15px;
+}
+
+button{
+background:#11b7c8;
+color:white;
+border:none;
+padding:14px 30px;
+border-radius:12px;
+font-size:16px;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#0e9cab;
+transform:translateY(-2px);
+}
+
+.option{
+background:#f5f5f5;
+padding:15px;
+border-radius:12px;
+margin:10px 0;
+cursor:pointer;
+transition:0.3s;
+border:2px solid transparent;
+}
+
+.option:hover{
+background:#eafcff;
+border-color:#11b7c8;
+}
+
+.progress{
+height:10px;
+background:#ddd;
+border-radius:10px;
+overflow:hidden;
+margin-bottom:20px;
+}
+
+.progress-bar{
+height:100%;
+background:#11b7c8;
+width:0%;
+transition:0.4s;
+}
+
+.result{
+text-align:center;
+}
+
+.certificate{
+background:white;
+padding:40px;
+border:10px solid #11b7c8;
+border-radius:20px;
+margin-top:20px;
+}
+
+.certificate h2{
+font-size:36px;
+color:#11b7c8;
+}
+
+.footer{
+text-align:center;
+margin-top:40px;
+padding:20px;
+color:#666;
+font-size:14px;
+}
+
+.hidden{
+display:none;
+}
+
+@keyframes fadeIn{
+from{
+opacity:0;
+transform:translateY(20px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+</style>
 </head>
+
 <body>
 
-<h1>Welcome to TUEM HUB Scholarship Portal</h1>
+<div class="container">
+
+<div class="card" id="registrationCard">
+
+<img src="LOGO.jpeg" class="logo">
+
+<h1>TUEM HUB Scholarship Portal</h1>
+<p class="subtitle">Redefine Your Career</p>
+
+<input type="text" id="name" placeholder="Full Name" required>
+<input type="number" id="age" placeholder="Age" required>
+<input type="text" id="qualification" placeholder="Qualification" required>
+<input type="text" id="phone" placeholder="Phone Number" required>
+<input type="email" id="email" placeholder="Email Address" required>
+
+<select id="course">
+<option value="">Select Course</option>
+<option value="Hospital Administration">Hospital Administration</option>
+<option value="Warehouse Management">Warehouse Management</option>
+<option value="Logistics">Logistics</option>
+<option value="Cyber Security">Cyber Security</option>
+</select>
+
+<select id="mode">
+<option value="">Select Mode</option>
+<option value="Online">Online</option>
+<option value="Offline">Offline</option>
+</select>
+
+<center>
+<button onclick="startQuiz()">Start Scholarship Test</button>
+</center>
+
+</div>
+
+<div class="card hidden" id="quizCard">
+
+<div class="progress">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+
+<h2 id="question"></h2>
+
+<div id="options"></div>
+
+</div>
+
+<div class="card hidden result" id="resultCard">
+
+<h1 id="resultTitle"></h1>
+<h2 id="scoreText"></h2>
+
+<div id="certificateSection" class="hidden">
+
+<div class="certificate" id="certificate">
+
+<img src="LOGO.jpeg" class="logo">
+
+<h2>Scholarship Certificate</h2>
+
+<p style="margin-top:20px;font-size:20px;">
+This certificate is proudly awarded to
+</p>
+
+<h1 id="certificateName" style="margin:20px 0;"></h1>
+
+<p>
+for successfully qualifying the TUEM HUB Scholarship Examination.
+</p>
+
+<p style="margin-top:20px;">
+Course: <span id="certificateCourse"></span>
+</p>
+
+<p>
+Score: <span id="certificateScore"></span>
+</p>
+
+<br><br>
+
+<p>______________________</p>
+<p>Authorized Signature</p>
+
+</div>
+
+<br>
+
+<button onclick="downloadCertificate()">Download Certificate</button>
+
+</div>
+
+</div>
+
+<div class="footer">
+© TUEM HUB <br>
+Redefine Your Career <br>
+Contact: +91 9567979702
+</div>
+
+</div>
+
+<script>
+
+const webAppURL = "https://script.google.com/macros/s/AKfycbwS_x9cnCVxIBLxysvbMXovseTYWsc0kyxHKa9P-nZD1lurVhjhqCcFOnNjq40Sg9VTYw/exec";
+
+let currentQuestion = 0;
+let score = 0;
+
+let userData = {};
+
+const questions = {
+
+"Hospital Administration":[
+{
+q:"What is the main role of a hospital administrator?",
+o:["Manage hospital operations","Drive ambulance","Treat patients","Clean rooms"],
+a:0
+},
+{
+q:"Which department handles patient records?",
+o:["HR","Medical Records","Security","Transport"],
+a:1
+},
+{
+q:"Why is communication important in hospitals?",
+o:["Entertainment","Patient care","Decoration","Cooking"],
+a:1
+},
+{
+q:"Which software is commonly used in hospitals?",
+o:["Hospital Management System","Video Editor","Game App","Music App"],
+a:0
+},
+{
+q:"What is patient confidentiality?",
+o:["Sharing details publicly","Keeping patient data private","Ignoring records","Deleting reports"],
+a:1
+},
+{
+q:"What is OPD?",
+o:["Operation Department","Out Patient Department","Office Planning Division","Online Patient Desk"],
+a:1
+},
+{
+q:"Who manages hospital staff scheduling?",
+o:["Administrator","Patient","Driver","Chef"],
+a:0
+},
+{
+q:"What does billing department do?",
+o:["Patient treatment","Collect payments","Security check","Cleaning"],
+a:1
+},
+{
+q:"Why are reports important?",
+o:["Decoration","Decision making","Entertainment","Games"],
+a:1
+},
+{
+q:"What is healthcare management?",
+o:["Managing healthcare services","Driving vehicles","Marketing products","Cooking"],
+a:0
+}
+],
+
+"Warehouse Management":[
+{
+q:"What is inventory?",
+o:["Employee list","Stock of goods","Truck route","Office file"],
+a:1
+},
+{
+q:"Why is barcode scanning used?",
+o:["Decoration","Stock tracking","Games","Music"],
+a:1
+},
+{
+q:"What is FIFO?",
+o:["Fast In Fast Out","First In First Out","Final Inventory Format","Front Inventory File"],
+a:1
+},
+{
+q:"Warehouse safety is important because?",
+o:["Reduce accidents","Increase noise","Delay work","Waste time"],
+a:0
+},
+{
+q:"Who manages warehouse stock?",
+o:["Warehouse Manager","Chef","Driver","Doctor"],
+a:0
+},
+{
+q:"What is dispatch?",
+o:["Receiving stock","Sending goods","Cleaning","Marketing"],
+a:1
+},
+{
+q:"What is storage optimization?",
+o:["Using space efficiently","Wasting space","Painting walls","Driving trucks"],
+a:0
+},
+{
+q:"Why are labels important?",
+o:["Decoration","Easy identification","Entertainment","Noise"],
+a:1
+},
+{
+q:"Which equipment is used in warehouses?",
+o:["Forklift","Stethoscope","Microscope","Camera"],
+a:0
+},
+{
+q:"What is stock audit?",
+o:["Checking inventory","Driving","Cooking","Marketing"],
+a:0
+}
+],
+
+"Logistics":[
+{
+q:"What is logistics?",
+o:["Managing transportation","Cooking","Painting","Gaming"],
+a:0
+},
+{
+q:"Why is supply chain important?",
+o:["Smooth delivery","Decoration","Music","Gaming"],
+a:0
+},
+{
+q:"What is freight?",
+o:["Transported goods","Office chair","Computer","Food"],
+a:0
+},
+{
+q:"What does GPS help with?",
+o:["Navigation","Cooking","Cleaning","Drawing"],
+a:0
+},
+{
+q:"Who handles shipment planning?",
+o:["Logistics Coordinator","Doctor","Chef","Teacher"],
+a:0
+},
+{
+q:"What is warehousing in logistics?",
+o:["Goods storage","Driving","Marketing","Painting"],
+a:0
+},
+{
+q:"Why are delivery schedules important?",
+o:["Timely delivery","Decoration","Noise","Games"],
+a:0
+},
+{
+q:"What is transportation management?",
+o:["Managing vehicle movement","Cooking","Teaching","Gaming"],
+a:0
+},
+{
+q:"What is reverse logistics?",
+o:["Return goods process","Fast driving","Medical process","Stock deletion"],
+a:0
+},
+{
+q:"What improves logistics efficiency?",
+o:["Technology","Delays","Manual errors","Confusion"],
+a:0
+}
+],
+
+"Cyber Security":[
+{
+q:"What is cyber security?",
+o:["Protecting systems","Cooking","Driving","Marketing"],
+a:0
+},
+{
+q:"What is a strong password?",
+o:["12345","Password","Combination of letters and symbols","Name only"],
+a:2
+},
+{
+q:"What is phishing?",
+o:["Cyber scam","Fishing in water","Cooking","Marketing"],
+a:0
+},
+{
+q:"Why use antivirus software?",
+o:["Protect systems","Increase viruses","Delete files","Decoration"],
+a:0
+},
+{
+q:"What is malware?",
+o:["Harmful software","Music app","Video editor","Browser"],
+a:0
+},
+{
+q:"What is hacking?",
+o:["Unauthorized access","Painting","Cooking","Driving"],
+a:0
+},
+{
+q:"Why update software?",
+o:["Improve security","Slow device","Delete files","Games"],
+a:0
+},
+{
+q:"What is firewall?",
+o:["Security protection","Cooking tool","Game","Music app"],
+a:0
+},
+{
+q:"What is data privacy?",
+o:["Protecting information","Sharing passwords","Deleting files","Gaming"],
+a:0
+},
+{
+q:"Why avoid suspicious links?",
+o:["Prevent cyber attacks","Increase speed","Decoration","Entertainment"],
+a:0
+}
+]
+
+};
+
+let selectedQuestions = [];
+
+function startQuiz(){
+
+userData.name = document.getElementById("name").value;
+userData.age = document.getElementById("age").value;
+userData.qualification = document.getElementById("qualification").value;
+userData.phone = document.getElementById("phone").value;
+userData.email = document.getElementById("email").value;
+userData.course = document.getElementById("course").value;
+userData.mode = document.getElementById("mode").value;
+
+if(!userData.name || !userData.age || !userData.course){
+alert("Please fill all fields");
+return;
+}
+
+selectedQuestions = questions[userData.course];
+
+document.getElementById("registrationCard").classList.add("hidden");
+document.getElementById("quizCard").classList.remove("hidden");
+
+loadQuestion();
+
+}
+
+function loadQuestion(){
+
+let q = selectedQuestions[currentQuestion];
+
+document.getElementById("question").innerText =
+`Question ${currentQuestion+1} of 10\n\n${q.q}`;
+
+document.getElementById("progressBar").style.width =
+`${(currentQuestion/10)*100}%`;
+
+let optionsHTML = "";
+
+q.o.forEach((option,index)=>{
+
+optionsHTML += `
+<div class="option" onclick="checkAnswer(${index})">
+${option}
+</div>
+`;
+
+});
+
+document.getElementById("options").innerHTML = optionsHTML;
+
+}
+
+function checkAnswer(selected){
+
+if(selected === selectedQuestions[currentQuestion].a){
+score++;
+}
+
+currentQuestion++;
+
+if(currentQuestion < 10){
+loadQuestion();
+}else{
+showResult();
+}
+
+}
+
+function showResult(){
+
+document.getElementById("quizCard").classList.add("hidden");
+document.getElementById("resultCard").classList.remove("hidden");
+
+let percentage = score * 10;
+
+let status = percentage >= 50 ? "Selected" : "Not Selected";
+
+document.getElementById("scoreText").innerText =
+`Your Score: ${percentage}%`;
+
+if(percentage >= 50){
+
+confetti();
+
+document.getElementById("resultTitle").innerText =
+"Congratulations! You are selected for the TUEM HUB Scholarship Program.";
+
+document.getElementById("certificateSection").classList.remove("hidden");
+
+document.getElementById("certificateName").innerText =
+userData.name;
+
+document.getElementById("certificateCourse").innerText =
+userData.course;
+
+document.getElementById("certificateScore").innerText =
+`${percentage}%`;
+
+}else{
+
+document.getElementById("resultTitle").innerText =
+"Thank you for attending the scholarship test.";
+
+}
+
+saveData(percentage,status);
+
+}
+
+function saveData(score,status){
+
+fetch(webAppURL,{
+method:"POST",
+body:JSON.stringify({
+name:userData.name,
+age:userData.age,
+qualification:userData.qualification,
+phone:userData.phone,
+email:userData.email,
+course:userData.course,
+mode:userData.mode,
+score:score,
+status:status
+})
+});
+
+}
+
+function downloadCertificate(){
+
+html2canvas(document.getElementById("certificate")).then(canvas=>{
+
+let link = document.createElement("a");
+
+link.download = "TUEMHUB-Certificate.png";
+
+link.href = canvas.toDataURL();
+
+link.click();
+
+});
+
+}
+
+</script>
 
 </body>
 </html>
