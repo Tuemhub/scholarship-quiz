@@ -602,12 +602,12 @@ document.getElementById("resultCard").classList.remove("hidden");
 
 let percentage = score * 10;
 
-let status = percentage >= 50 ? "Selected" : "Not Selected";
+let status = percentage >= 30 ? "Selected" : "Not Selected";
 
 document.getElementById("scoreText").innerText =
 `Your Score: ${percentage}%`;
 
-if(percentage >= 50){
+if(percentage >= 30){
 
 confetti();
 
